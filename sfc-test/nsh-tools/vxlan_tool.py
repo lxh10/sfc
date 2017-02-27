@@ -558,6 +558,9 @@ def main():
         '-i', '--interface',
         help='Specify the interface to listen')
     parser.add_argument(
+        '-s', '--interface_send',
+        help='Specify the interface_send to send')
+    parser.add_argument(
         '-d', '--do', choices=['dump', 'forward', 'send'],
         help='dump/foward/send VxLAN/VxLAN-gpe + NSH or Eth + NSH packet')
     parser.add_argument(
@@ -626,10 +629,10 @@ def main():
         if ((args.do == "forward") or (args.do == "send")):
             if args.interface is None:
                 print("Error: you must specify the interface by "
-                      "-i or --interface for forward and send")
+                      "-s or --interface_send for forward and send")
                 sys.exit(-1)
             send_s = socket.socket(socket.AF_PACKET, socket.SOCK_RAW)
-            send_s.bind((args.interface, 0))
+            send_s.bind((args.interface_send, 0))
         if args.interface is not None:
             macstring = getmac(args.interface)
             if (macstring is not None):
@@ -871,7 +874,7 @@ def main():
                         str(args.block) + bcolors.ENDC)
                     continue
 
-            if ((args.do == "forward") and (args.interface is not None)):
+            if ((args.do == "forward") and (args.interface_send is not None)):
                 """ nsi minus one for send """
                 mynshbaseheader.service_index -= 1
 
@@ -971,7 +974,7 @@ def main():
                     continue
 
             if ((args.do == "forward") and
-               (args.interface is not None) and
+               (args.interface_send is not None) and
                (mynshbaseheader.service_index > 1)):
                 """ Build Ethernet header """
                 newethheader = build_ethernet_header_swap(myethheader)
